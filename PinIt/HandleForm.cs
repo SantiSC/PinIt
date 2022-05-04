@@ -8,6 +8,7 @@ namespace PinIt
     {
         private static int TOP_HOTKEY;
         private static int NORMAL_HOTKEY;
+        private static int BOTTOM_HOTKEY;
 
         // We need a form to override wndproc and get hotkeys
         public HandleForm()
@@ -16,6 +17,7 @@ namespace PinIt
 
             TOP_HOTKEY = (int)Keys.F8 ^ this.Handle.ToInt32();
             NORMAL_HOTKEY = (int)Keys.F9 ^ this.Handle.ToInt32();
+            BOTTOM_HOTKEY = (int)Keys.F7 ^ this.Handle.ToInt32();
         }
 
         // Override wndproc to handle the key press
@@ -36,6 +38,12 @@ namespace PinIt
                     // Get the current active window
                     IntPtr activeWindow = WinAPI.GetForegroundWindow();
                     WinAPI.SetNormal(activeWindow);
+                }
+                else if (m.WParam.ToInt32() == BOTTOM_HOTKEY)
+                {
+                    // Get the current active window
+                    IntPtr activeWindow = WinAPI.GetForegroundWindow();
+                    WinAPI.SetBottom(activeWindow);
                 }
             }
 
@@ -60,12 +68,14 @@ namespace PinIt
             // ALT+CTRL = 1 + 2 = 3 , CTRL+SHIFT = 2 + 4 = 6...
             WinAPI.RegisterHotKey(this.Handle, TOP_HOTKEY, 6, (int)Keys.F8);
             WinAPI.RegisterHotKey(this.Handle, NORMAL_HOTKEY, 6, (int)Keys.F9);
+            WinAPI.RegisterHotKey(this.Handle, BOTTOM_HOTKEY, 6, (int)Keys.F7);
         }
 
         private void UnRegisterHotKeys()
         {
             WinAPI.UnregisterHotKey(this.Handle, TOP_HOTKEY);
             WinAPI.UnregisterHotKey(this.Handle, NORMAL_HOTKEY);
+            WinAPI.UnregisterHotKey(this.Handle, BOTTOM_HOTKEY);
         }
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
